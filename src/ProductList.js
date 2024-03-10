@@ -1,6 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const ProductList = ({ products, onAddToCart }) => {
+  const [quantities, setQuantities] = useState({});
+
+  const handleIncrement = (productId) => {
+    setQuantities({ ...quantities, [productId]: (quantities[productId] || 0) + 1 });
+  };
+
+  const handleDecrement = (productId) => {
+    if (quantities[productId] > 0) {
+      setQuantities({ ...quantities, [productId]: quantities[productId] - 1 });
+    }
+  };
+
   return (
     <div>
       <h2>Nuestros Productos</h2>
@@ -8,13 +20,6 @@ const ProductList = ({ products, onAddToCart }) => {
         {products.map((product) => (
           <div key={product.id} className="col-md-4 mb-4">
             <div className="card">
-              {}
-              {/* <img
-                src={product.image}
-                className="card-img-left"
-                alt={product.name}
-                style={{ width: '150px', height: '200px' }}  // Tamano de las imagenes.
-              /> */}
               <div className="card-body">
                 <h5 className="card-title">{product.nombre}</h5>
                 <p className="card-text">{product.descripcion}</p>
@@ -24,14 +29,14 @@ const ProductList = ({ products, onAddToCart }) => {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 3,
                   }).format(product.precioUnitario)}</p>
-                
-                
-                <button
-                  className="btn btn-primary"
-                  onClick={() => onAddToCart(product)}
-                >
-                  Agregar al carrito
-                </button>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <button className="btn btn-sm btn-secondary mr-2" onClick={() => handleDecrement(product.id)}>-</button>
+                    <span>{quantities[product.id] || 0}</span>
+                    <button className="btn btn-sm btn-secondary ml-2" onClick={() => handleIncrement(product.id)}>+</button>
+                  </div>
+                  <button className="btn btn-primary" onClick={() => onAddToCart(product, quantities[product.id] || 1)}>Agregar al carrito</button>
+                </div>
               </div>
             </div>
           </div>
@@ -42,4 +47,3 @@ const ProductList = ({ products, onAddToCart }) => {
 };
 
 export default ProductList;
-

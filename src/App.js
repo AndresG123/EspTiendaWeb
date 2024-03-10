@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProductList from './ProductList';
 import ShoppingCart from './ShoppingCart';
-import { getItems, postItem, getFilter } from './servicios/product.service'
+import { getItems, postItem, getFilter, updateItem } from './servicios/product.service'
 import { Producto, Usuario } from "./entidades/entidades"
+import { SwalError } from './servicios/swal.service';
 import Swal from 'sweetalert2';
 const App = () => {
   const [cart, setCart] = useState([]);
@@ -22,28 +23,30 @@ const App = () => {
   }, [])
 
 
-  const addToCart = async (product) => {
-    if (!CurrentCarrito) {
-      if (CurrentUser) {
-        const filtros = {
-          'usuario': CurrentUser,
-          'estado': false
-        }
-        let carrito = await getFilter('carritoFilter', filtros)
-        if (carrito.length > 0) {
-          setCurrentCarrito(carrito)
-        } else {
-          carrito = await postItem('carritos', {
-            "usuario": parseInt(CurrentUser)
-          })
-        }
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Debes seleccionar un usuario...",
-        });
+  const addToCart = async (product, cantidad) => {
+    if (CurrentUser) {
+      const filtros = {
+        'carrito': CurrentCarrito.id,
+        'producto': product.id
       }
+      let item=await getFilter("ItemsFilter",filtros)
+      if(item.length>0){
+        let itemUpdate=item[0]
+        itemUpdate.cantidad+=parseInt(cantidad)
+        console.log(itemUpdate)
+        await updateItem("items", itemUpdate,itemUpdate.id)
+      }else{
+        let data = {
+          "cantidad": cantidad,
+          "precio_venta": product.precioUnitario,
+          "descuento": 0,
+          "carrito": CurrentCarrito.id,
+          "producto": product.id
+        }
+        await postItem("items", data)
+      }
+    } else {
+      SwalError("Debes seleccionar un usuario primero...")
     }
   };
 
@@ -71,9 +74,21 @@ const App = () => {
     </div>
   );
 
-  function handleUsuarioChange(event) {
+  async function handleUsuarioChange(event) {
     const selectedUsuarioId = event.target.value;
     setCurrentUser(selectedUsuarioId)
+    
+    const filtros = {
+      'usuario': selectedUsuarioId,
+      'estado': false
+    }
+    let carrito = await getFilter('carritoFilter', filtros)
+    if (carrito.length === 0) {
+      carrito = await postItem('carritos', {
+        "usuario": parseInt(selectedUsuarioId)
+      })
+    }
+    setCurrentCarrito(carrito[0])
   }
 
 };
