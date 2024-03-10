@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProductList from './ProductList';
 import ShoppingCart from './ShoppingCart';
-import { getItems } from './servicios/product.service'
+import { getItems, postItem, getFilter } from './servicios/product.service'
 import { Producto, Usuario } from "./entidades/entidades"
+import Swal from 'sweetalert2';
 const App = () => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState([])
   const [Usuarios, seUsuarios] = useState([])
-  const [CurrentUser, setCurrentUser]=useState('')
+  const [CurrentUser, setCurrentUser] = useState(null)
+  const [CurrentCarrito, setCurrentCarrito] = useState(null)
   useEffect(() => {
+
     const asyncQuerys = [getItems('productos'), getItems('usuarios')]
     Promise.all(asyncQuerys).then((res) => {
       setProducts(Producto.fromArray(res[0]))
@@ -19,7 +22,29 @@ const App = () => {
   }, [])
 
 
-  const addToCart = (product) => {
+  const addToCart = async (product) => {
+    if (!CurrentCarrito) {
+      if (CurrentUser) {
+        const filtros = {
+          'usuario': CurrentUser,
+          'estado': false
+        }
+        let carrito = await getFilter('carritoFilter', filtros)
+        if (carrito.length > 0) {
+          setCurrentCarrito(carrito)
+        } else {
+          carrito = await postItem('carritos', {
+            "usuario": parseInt(CurrentUser)
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Debes seleccionar un usuario...",
+        });
+      }
+    }
   };
 
   const removeFromCart = (product) => {
@@ -46,7 +71,6 @@ const App = () => {
     </div>
   );
 
-  // Función handleUsuarioChange para manejar el cambio de la Usuario seleccionada
   function handleUsuarioChange(event) {
     const selectedUsuarioId = event.target.value;
     setCurrentUser(selectedUsuarioId)
