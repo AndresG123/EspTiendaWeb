@@ -9,21 +9,21 @@ const ProductList = ({ products, onAddToCart }) => {
           <div key={product.id} className="col-md-4 mb-4">
             <div className="card">
               {}
-              <img
+              {/* <img
                 src={product.image}
                 className="card-img-left"
                 alt={product.name}
                 style={{ width: '150px', height: '200px' }}  // Tamano de las imagenes.
-              />
+              /> */}
               <div className="card-body">
-                <h5 className="card-title">{product.name}</h5>
-                <p className="card-text">{product.description}</p>
+                <h5 className="card-title">{product.nombre}</h5>
+                <p className="card-text">{product.descripcion}</p>
                 <p className="card-text">Precio: {new Intl.NumberFormat('es-CO', {
                     style: 'currency',
                     currency: 'COP',
                     minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }).format(product.price)}</p>
+                    maximumFractionDigits: 3,
+                  }).format(product.precioUnitario)}</p>
                 
                 
                 <button
