@@ -1,7 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const ProductList = ({ products, onAddToCart }) => {
+const ProductList = ({ products, onAddToCart, items }) => {
   const [quantities, setQuantities] = useState({});
+
+  useEffect(()=>{
+    if(items){
+      products.map((product)=>{
+        let item=items.find((element)=>element.producto==product.id)
+        if(item){
+          product.precioUnitario=item.precio_venta
+          product.precioTotal=product.precioUnitario*item.cantidad
+          setQuantities({ ...quantities, [product.id]: item.cantidad });
+          return product
+        }
+      })
+    }
+    
+  },[products, items])
 
   const handleIncrement = (productId) => {
     setQuantities({ ...quantities, [productId]: (quantities[productId] || 0) + 1 });
@@ -35,7 +50,7 @@ const ProductList = ({ products, onAddToCart }) => {
                     <span>{quantities[product.id] || 0}</span>
                     <button className="btn btn-sm btn-secondary ml-2" onClick={() => handleIncrement(product.id)}>+</button>
                   </div>
-                  <button className="btn btn-primary" onClick={() => onAddToCart(product, quantities[product.id] || 1)}>Agregar al carrito</button>
+                  <button className="btn btn-primary" onClick={() => onAddToCart(product, quantities[product.id] || 0)}>Agregar al carrito</button>
                 </div>
               </div>
             </div>
