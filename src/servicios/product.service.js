@@ -1,4 +1,4 @@
-const backendUrl = "http://127.0.0.1:8000/";
+const backendUrl = "https://tienda-back-f3kb.onrender.com/";
 
 
 export const getItems=async (endpoint)=>{
