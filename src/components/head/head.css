@@ -1,0 +1,49 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .title {
+    margin: 0;
+  }
+  
+  .custom-select {
+    position: relative;
+  }
+  
+  .form-select {
+    appearance: none;
+    padding: 10px 40px 10px 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .select-icon {
+    position: absolute;
+    top: 50%;
+    right: 26px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  
+  /* Estilos de las opciones */
+  .form-select option {
+    background-color: #fff;
+    color: #333;
+  }
+  
+  .form-select option:hover {
+    background-color: #f0f0f0;
+  }
+
+  .user-select{
+    position: relative;
+    top: 13px;
+  }
+  

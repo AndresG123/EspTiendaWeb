@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ProductList from './ProductList';
-import ShoppingCart from './ShoppingCart';
-import { getItems, postItem, getFilter, updateItem } from './servicios/product.service'
-import { Producto, Usuario } from "./entidades/entidades"
-import { SwalError } from './servicios/swal.service';
+import ProductList from '../../components/ProducsList/ProductList';
+import Header from '../../components/head/head';
+import { getItems, postItem, getFilter, updateItem } from '../../servicios/product.service';
+import { Producto, Usuario } from "../../entidades/entidades";
+import { SwalError } from '../../servicios/swal.service';
+import './App.css';
 
 const App = () => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
-  const [products, setProducts] = useState([])
-  const [users, setUsers] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
-  const [currentCart, setCurrentCart] = useState(null)
-  const [items, setItems] = useState(null)
+  const [products, setProducts] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [currentCart, setCurrentCart] = useState(null);
+  const [items, setItems] = useState(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -61,18 +62,12 @@ const App = () => {
     } else {
       const newItemData = {
         "cantidad": cantidad,
-        "precio_venta": product.precioUnitario,
-        "descuento": 0,
         "carrito": currentCart.id,
         "producto": product.id
       };
-      const newItem = await postItem("items", newItemData);
+      const newItem = await postItem("setItem", newItemData);
       setItems([...items, newItem]);
     }
-  };
-
-  const removeFromCart = (product) => {
-    // Implementación de remove del carrito
   };
 
   const checkout = () => {
@@ -80,21 +75,22 @@ const App = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4">Rico Tienda</h1>
-      <div className="mb-4">
-        <select onChange={handleUsuarioChange}>
-          <option value="">Selecciona una Usuario</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>{user.nombre}</option>
-          ))}
-        </select>
+    <div>
+      <div className='head'>
+        <Header user={currentUser?currentUser:''} users={users} handleUsuarioChange={handleUsuarioChange} />
       </div>
+      <div className="container-fluid background">
+        <div className="container mt-5">
 
-      <ProductList products={products} onAddToCart={addToCart} items={items} />
+          <ProductList products={products} onAddToCart={addToCart} items={items} user={currentUser} />
 
-      <ShoppingCart cart={cart} onRemoveFromCart={removeFromCart} onCheckout={checkout} />
+          <button className="btn btn-lg btn-success btn-checkout" onClick={checkout}>
+            Ir a pagar
+          </button>
+        </div>
+      </div>
     </div>
+
   );
 };
 
